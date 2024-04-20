@@ -1,9 +1,7 @@
 const request = require('supertest');
 const chai = require("fix-esm").require('chai');
-const expect = chai.expect;
-
 const server = require('../server');
-//const expect = chai.expect;
+const expect = chai.expect;
 
 describe('GET /', () => {
   it('should return status 200', (done) => {
