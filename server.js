@@ -1,7 +1,9 @@
 const express = require('express');
-const app = express();
+const server = express();
 const PORT = process.env.port || 3500;
 
-app.use('/', require('./routes/root'));
+server.use('/', require('./routes/root'));
 
-app.listen(PORT, ()=> console.log('Server running on port: ' + PORT))
+server.listen(PORT, ()=> console.log('Server running on port: ' + PORT))
+
+module.exports = server;
