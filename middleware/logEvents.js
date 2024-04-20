@@ -22,4 +22,9 @@ const logger = (req,res,next)=>{
     next();
 }
 
-module.exports = {logEvents,logger};
+const errorLogger = (err,req,res,next) => {
+    logEvents(err.name + ": " +err.message,'errorLog.txt');
+    res.status(500).send(err.message);
+}
+
+module.exports = {logEvents,logger, errorLogger};
