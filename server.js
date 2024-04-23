@@ -16,14 +16,11 @@ server.use("/", require("./routes/root"));
 server.all("*", (req, res) => {
     res.status(404); //set response status to 404
     if (req.accepts("html")) {
-        //for browser based requests
-        res.sendFile(path.join(__dirname, "views", "404.html"));
+        res.sendFile(path.join(__dirname, "views", "404.html")); //for browser based requests
     } else if (req.accepts("json")) {
-        //for api calls
-        res.json({ error: "404 Not Found" });
+        res.json({ error: "404 Not Found" }); //for api calls
     } else {
-        //other
-        res.type("txt").send("404 not found");
+        res.type("txt").send("404 not found"); //other
     }
 });
 

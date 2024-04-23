@@ -30,3 +30,5 @@ jobs:
             - run: npm test
               env: # Or as an environment variable
                   DATABASE_URI: ${{ secrets.DATABASE_URI }}
+                  ACCESS_TOKEN_SECRET: ${{ secrets.ACCESS_TOKEN_SECRET }}
+                  REFRESH_TOKEN_SECRET: ${{ secrets.REFRESH_TOKEN_SECRET }}
