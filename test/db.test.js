@@ -8,5 +8,4 @@ describe("connect to db", () => {
     before(async () => {
         await connectDB();
     });
-    console.log(process.env.DATABASE_URI);
 });
