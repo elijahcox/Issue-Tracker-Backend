@@ -1,12 +1,11 @@
 const request = require("supertest");
 const chai = require("fix-esm").require("chai");
 const server = require("../server");
+const connectDB = require("../config/dbConn.js");
 const expect = chai.expect;
 
-before(function (done) {
-    connectDB(done);
-});
-
 describe("connect to db", () => {
-    it("should successfully connect", (done) => {});
+    before(async () => {
+        await connectDB();
+    });
 });
