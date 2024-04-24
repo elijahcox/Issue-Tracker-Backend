@@ -11,7 +11,10 @@ connectDB();
 
 server.use(logger); //custom middleware logger
 
+server.use(express.json()); //without a route specified, app use will be called with any request, they follow the chained order layed out here
+
 server.use("/", require("./routes/root"));
+server.use("/register", require("./routes/api/register.js"));
 
 server.all("*", (req, res) => {
     res.status(404); //set response status to 404

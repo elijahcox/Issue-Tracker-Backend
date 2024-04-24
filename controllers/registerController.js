@@ -26,11 +26,11 @@ const handleNewUser = async (req, res) => {
             "username": username,
             "password": hashedPwd
         });
-        console.log(result);
-        res.status(201).json({ "success": "New user " + user + " created" });
+
+        res.status(201).json({ "username": username });
     } catch (error) {
         res.status(500).json({ "message": error.message });
     }
 };
 
-module.exports = handleNewUser;
+module.exports = { handleNewUser };
