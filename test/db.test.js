@@ -27,6 +27,18 @@ describe("Register User", () => {
             .catch((err) => done(err));
     });
 
+    it("should return an access token in body when posting JSON to /authenticate", (done) => {
+        request(server)
+            .post("/authenticate")
+            .send(tempUser)
+            .expect(200)
+            .then((res) => {
+                expect(res.body.accessToken).to.not.eql("");
+                done();
+            })
+            .catch((err) => done(err));
+    });
+
     after(async () => {
         try {
             await User.deleteOne({ username: tempUser.username });
