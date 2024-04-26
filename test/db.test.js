@@ -27,13 +27,26 @@ describe("Register User", () => {
             .catch((err) => done(err));
     });
 
-    it("should return an access token in body when posting JSON to /authenticate", (done) => {
+    it("should return an access token in body when posting valid JSON credentials to /authenticate", (done) => {
         request(server)
             .post("/authenticate")
             .send(tempUser)
             .expect(200)
             .then((res) => {
                 expect(res.body.accessToken).to.not.eql("");
+                done();
+            })
+            .catch((err) => done(err));
+    });
+
+    it("should not return an access token when posting invalid JSON credentials to /authenticate", (done) => {
+        tempUser.password = "x";
+        request(server)
+            .post("/authenticate")
+            .send(tempUser)
+            .expect(401)
+            .then((res) => {
+                expect(res.text).to.contain("Unauthorized");
                 done();
             })
             .catch((err) => done(err));
