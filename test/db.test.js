@@ -27,7 +27,21 @@ describe("Register User", () => {
             .catch((err) => done(err));
     });
 
-    it("should return an access token in body when posting valid JSON credentials to /authenticate", (done) => {
+    it("should return an access token in body and upload refresh to DB when posting valid JSON credentials to /authenticate", async () => {
+        request(server)
+            .post("/authenticate")
+            .send(tempUser)
+            .expect(200)
+            .then((res) => {
+                expect(res.body.accessToken).to.not.eql("");
+                expect(res.cookies.jwt).to.not.eql("");
+                const foundUser = await User.findOne({ username: user }).exec();
+                done();
+            })
+            .catch((err) => done(err));
+    });
+
+    it("should clear a refresh token from cookie and user database upon request to /logout", (done) => {
         request(server)
             .post("/authenticate")
             .send(tempUser)
@@ -40,7 +54,7 @@ describe("Register User", () => {
     });
 
     it("should not return an access token when posting invalid JSON credentials to /authenticate", (done) => {
-        tempUser.password = "x";
+        tempUser.password = "x"; //Problem, I thought this needed to be async
         request(server)
             .post("/authenticate")
             .send(tempUser)
