@@ -1,10 +1,20 @@
 const User = require("../model/User");
 
 const handleLogout = async (req, res) => {
-    //get cookie, check if token present in cookie
-    //if no token in cookie, return success status
-    //if token in cookie, look up user in DB based on cookie
-    //clear from cookie and user, save and return success status
+    const cookies = req.cookies;
+    if (cookies.jwt == null) {
+        return res.sendStatus(204);
+    }
+    const refreshToken = cookies.jwt;
+    const foundUser = await User.findOne({ refreshToken }).exec();
+
+    if (foundUser) {
+        foundUser.refreshToken = "";
+        const result = await foundUser.save();
+    }
+
+    res.clearCookie("jwt", { httpOnly: true, sameSite: "None", secure: true });
+    return res.sendStatus(204);
 };
 
 module.exports = { handleLogout };
