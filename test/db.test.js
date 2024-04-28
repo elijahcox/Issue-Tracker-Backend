@@ -28,32 +28,35 @@ describe("Register User", () => {
     });
 
     it("should return an access token in body and upload refresh to DB when posting valid JSON credentials to /authenticate", async () => {
-        request(server)
+        let res;
+        await request(server)
             .post("/authenticate")
             .send(tempUser)
             .expect(200)
             .then((res) => {
                 expect(res.body.accessToken).to.not.eql("");
                 expect(res.cookies.jwt).to.not.eql("");
-                const foundUser = await User.findOne({ username: user }).exec();
-                done();
             })
             .catch((err) => done(err));
+
+        expect(await User.findOne({ refreshToken: res.cookies.jwt }).exec()).to.not.eql(null);
     });
 
-    it("should clear a refresh token from cookie and user database upon request to /logout", (done) => {
-        request(server)
+    it("should clear a refresh token from cookie and user database upon request to /logout", async () => {
+        await request(server)
             .post("/authenticate")
             .send(tempUser)
-            .expect(200)
+            .expect(204)
             .then((res) => {
-                expect(res.body.accessToken).to.not.eql("");
+                expect(res.cookies.jwt).to.eql("");
                 done();
             })
             .catch((err) => done(err));
+
+        expect(await User.findOne({ username: tempUser.username }).exec()).refreshToken.to.eql(null);
     });
 
-    it("should not return an access token when posting invalid JSON credentials to /authenticate", (done) => {
+    it("should not return an access token when posting invalid JSON credentials to /authenticate", async (done) => {
         tempUser.password = "x"; //Problem, I thought this needed to be async
         request(server)
             .post("/authenticate")
