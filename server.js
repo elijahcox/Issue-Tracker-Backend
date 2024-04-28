@@ -16,7 +16,8 @@ server.use(express.json()); //without a route specified, app use will be called 
 server.use("/", require("./routes/root"));
 server.use("/register", require("./routes/api/register.js"));
 server.use("/authenticate", require("./routes/api/authenticate"));
-server.use("/logout", require("./routes/api/logout.js"));
+server.use("/refresh", require("./routes/api/refresh"));
+server.use("/logout", require("./routes/api/logout"));
 
 server.all("*", (req, res) => {
     res.status(404); //set response status to 404
