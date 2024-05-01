@@ -27,6 +27,45 @@ describe("Register User", () => {
             .catch((err) => done(err));
     });
 
+    it("should return an access token in body and upload refresh to DB when posting valid JSON credentials to /authenticate", async () => {
+        await request(server)
+            .post("/authenticate")
+            .send(tempUser)
+            .expect(200)
+            .then((res) => {
+                expect(res.body.accessToken).to.not.eql("");
+            });
+        const foundUser = await User.findOne({ username: tempUser.username }).exec();
+        expect(foundUser.refreshToken).to.not.eql(null);
+    });
+
+    it("should clear a refresh token from cookie and user database upon request to /logout", (done) => {
+        request(server)
+            .post("/logout")
+            .send()
+            .expect(204)
+            .then((res) => {
+                expect(res.cookies.jwt).to.eql("");
+                done();
+            });
+        const foundUser = User.findOne({ username: tempUser.username }).exec();
+        expect(foundUser.refreshToken).to.eql(undefined);
+        done();
+    });
+
+    it("should not return an access token when posting invalid JSON credentials to /authenticate", (done) => {
+        tempUser.password = "x"; //Problem, I thought this needed to be async
+        request(server)
+            .post("/authenticate")
+            .send(tempUser)
+            .expect(401)
+            .then((res) => {
+                expect(res.text).to.contain("Unauthorized");
+                done();
+            })
+            .catch((err) => done(err));
+    });
+
     after(async () => {
         try {
             await User.deleteOne({ username: tempUser.username });

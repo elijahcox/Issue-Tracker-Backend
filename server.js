@@ -5,6 +5,7 @@ const path = require("path");
 const server = express();
 const { logger, errorLogger } = require("./middleware/logEvents.js");
 const connectDB = require("./config/dbConn.js");
+const cookieParser = require("cookie-parser");
 const PORT = process.env.port || 3500;
 
 connectDB();
@@ -12,9 +13,12 @@ connectDB();
 server.use(logger); //custom middleware logger
 
 server.use(express.json()); //without a route specified, app use will be called with any request, they follow the chained order layed out here
-
+server.use(cookieParser());
 server.use("/", require("./routes/root"));
 server.use("/register", require("./routes/api/register.js"));
+server.use("/authenticate", require("./routes/api/authenticate"));
+server.use("/refresh", require("./routes/api/refresh"));
+server.use("/logout", require("./routes/api/logout"));
 
 server.all("*", (req, res) => {
     res.status(404); //set response status to 404
