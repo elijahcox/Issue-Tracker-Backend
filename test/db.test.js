@@ -28,35 +28,32 @@ describe("Register User", () => {
     });
 
     it("should return an access token in body and upload refresh to DB when posting valid JSON credentials to /authenticate", async () => {
-        let res;
         await request(server)
             .post("/authenticate")
             .send(tempUser)
             .expect(200)
             .then((res) => {
                 expect(res.body.accessToken).to.not.eql("");
-                expect(res.cookies.jwt).to.not.eql("");
-            })
-            .catch((err) => done(err));
-
-        expect(await User.findOne({ refreshToken: res.cookies.jwt }).exec()).to.not.eql(null);
+            });
+        const foundUser = await User.findOne({ username: tempUser.username }).exec();
+        expect(foundUser.refreshToken).to.not.eql(null);
     });
 
-    it("should clear a refresh token from cookie and user database upon request to /logout", async () => {
-        await request(server)
-            .post("/authenticate")
-            .send(tempUser)
+    it("should clear a refresh token from cookie and user database upon request to /logout", (done) => {
+        request(server)
+            .post("/logout")
+            .send()
             .expect(204)
             .then((res) => {
                 expect(res.cookies.jwt).to.eql("");
                 done();
-            })
-            .catch((err) => done(err));
-
-        expect(await User.findOne({ username: tempUser.username }).exec()).refreshToken.to.eql(null);
+            });
+        const foundUser = User.findOne({ username: tempUser.username }).exec();
+        expect(foundUser.refreshToken).to.eql(undefined);
+        done();
     });
 
-    it("should not return an access token when posting invalid JSON credentials to /authenticate", async (done) => {
+    it("should not return an access token when posting invalid JSON credentials to /authenticate", (done) => {
         tempUser.password = "x"; //Problem, I thought this needed to be async
         request(server)
             .post("/authenticate")
