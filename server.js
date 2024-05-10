@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const path = require("path");
+const verifyJWT = require("./middleware/verifyJWT.js");
 const server = express();
 const { logger, errorLogger } = require("./middleware/logEvents.js");
 const connectDB = require("./config/dbConn.js");
@@ -22,6 +23,7 @@ server.use("/refresh", require("./routes/api/refresh"));
 server.use("/logout", require("./routes/api/logout"));
 
 //must protect tasks
+app.use(verifyJWT());
 app.use("/tasks", require("./routes/api/task"));
 
 server.all("*", (req, res) => {
