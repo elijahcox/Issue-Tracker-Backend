@@ -23,8 +23,8 @@ server.use("/refresh", require("./routes/api/refresh"));
 server.use("/logout", require("./routes/api/logout"));
 
 //must protect tasks
-app.use(verifyJWT());
-app.use("/tasks", require("./routes/api/task"));
+server.use(verifyJWT());
+server.use("/tasks", require("./routes/api/task"));
 
 server.all("*", (req, res) => {
     res.status(404); //set response status to 404
