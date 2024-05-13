@@ -23,7 +23,7 @@ server.use("/refresh", require("./routes/api/refresh"));
 server.use("/logout", require("./routes/api/logout"));
 
 //must protect tasks
-server.use(verifyJWT());
+server.use(verifyJWT);
 server.use("/tasks", require("./routes/api/task"));
 
 server.all("*", (req, res) => {
