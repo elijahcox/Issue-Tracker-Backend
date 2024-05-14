@@ -13,8 +13,8 @@ const tempUser = {
 
 const tempTask = {
     title: "Test Task",
-    size: "3",
-    priority: "small"
+    size: "medium",
+    priority: "low"
 };
 
 let accessToken;
@@ -145,6 +145,15 @@ describe("Standard CRUD Lifecycle Flow for Users and Tasks", () => {
                 expect(res.body).to.not.eql("");
                 expect(res.body.length).to.eql(2);
             });
+    });
+
+    it("should return 0 tasks when querying /tasks with GET by priority", async () => {
+        await request(server)
+            .get("/tasks")
+            .send({ "priority": "medium" })
+            .set("Authorization", "Bearer " + accessToken)
+            .expect(404)
+            .then((res) => {});
     });
 
     it("should unsuccessfully call delete  on /tasks/:id (valid id, no auth token)", async () => {
