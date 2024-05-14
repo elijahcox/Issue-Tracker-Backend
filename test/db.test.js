@@ -89,8 +89,23 @@ describe("Standard CRUD Lifecycle Flow for Users and Tasks", () => {
         /**/
     });
 
-    it("should successfully delete tasks when posting valid ID to /delete", async () => {
-        /**/
+    it("should unsuccessfully call delete  on /tasks/:id (valid id, no auth token)", async () => {
+        await request(server)
+            .delete("/tasks/" + tid)
+            .expect(401)
+            .then((res) => {});
+        const foundTask = await Task.findOne({ _id: tid, userID: uid }).exec();
+        expect(foundTask).to.not.eql(null);
+    });
+
+    it("should successfully call delete  on /tasks/:id (valid id)", async () => {
+        await request(server)
+            .delete("/tasks/" + tid)
+            .set("Authorization", "Bearer " + accessToken)
+            .expect(204)
+            .then((res) => {});
+        const foundTask = await Task.findOne({ _id: tid, userID: uid }).exec();
+        expect(foundTask).to.eql(null);
     });
 
     it("should clear a refresh token from cookie and user database upon request to /logout", (done) => {
