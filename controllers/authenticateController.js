@@ -20,22 +20,18 @@ const handleLogin = async (req, res) => {
         const match = await bcrypt.compare(password, foundUser.password);
         if (match) {
             const role = foundUser.role;
+            const userID = foundUser._id.toString();
             const accessToken = jwt.sign(
-                { "UserInfo": { "username": foundUser.username, "role": role } },
+                { "UserInfo": { "username": foundUser.username, "role": role, "userID": userID } },
                 process.env.ACCESS_TOKEN_SECRET,
                 { expiresIn: "2m" }
             ); //5-15min in prod
 
-            const refreshToken = jwt.sign(
-                { "username": foundUser.username },
-                process.env.REFRESH_TOKEN_SECRET,
-                { expiresIn: "1d" }
-            );
+            const refreshToken = jwt.sign({ "username": foundUser.username }, process.env.REFRESH_TOKEN_SECRET, {
+                expiresIn: "1d"
+            });
 
-            const result = await User.updateOne(
-                { username: username },
-                { refreshToken: refreshToken }
-            );
+            const result = await User.updateOne({ username: username }, { refreshToken: refreshToken });
             res.cookie("jwt", refreshToken, {
                 httpOnly: true,
                 maxAge: 24 * 60 * 60 * 1000,
