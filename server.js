@@ -17,10 +17,10 @@ server.use(express.json()); //without a route specified, app use will be called 
 server.use(cookieParser());
 
 server.use("/", require("./routes/root"));
-server.use("/register", require("./routes/api/register.js"));
-server.use("/authenticate", require("./routes/api/authenticate"));
-server.use("/refresh", require("./routes/api/refresh"));
-server.use("/logout", require("./routes/api/logout"));
+server.use("/register", require("./routes/register.js"));
+server.use("/authenticate", require("./routes/authenticate.js"));
+server.use("/refresh", require("./routes/refresh.js"));
+server.use("/logout", require("./routes/logout.js"));
 
 //must protect tasks
 server.use(verifyJWT);
