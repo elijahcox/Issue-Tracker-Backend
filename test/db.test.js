@@ -53,6 +53,16 @@ describe("Standard CRUD Lifecycle Flow for Users and Tasks", () => {
         expect(foundUser.refreshToken).to.not.eql(null);
     });
 
+    it("should NOT create a new task when posting a task to /tasks WITHOUT AT in body", async () => {
+        await request(server)
+            .post("/tasks")
+            .send(tempTask)
+            .expect(401)
+            .then((res) => {
+                expect(res.body).to.eql({});
+            });
+    });
+
     it("should create a new task when posting a task to /tasks with AT in body", async () => {
         await request(server)
             .post("/tasks")
@@ -65,6 +75,22 @@ describe("Standard CRUD Lifecycle Flow for Users and Tasks", () => {
             });
         const foundTask = await Task.findOne({ _id: tid, userID: uid }).exec();
         expect(foundTask).to.not.eql(null);
+    });
+
+    it("should update existing task object when posting updated field to /tasks, including ID", async () => {
+        /**/
+    });
+
+    it("should return the correct task when querying /tasks with GET by ID", async () => {
+        /**/
+    });
+
+    it("should return the correct number of tasks when querying /tasks with GET ALL", async () => {
+        /**/
+    });
+
+    it("should successfully delete tasks when posting valid ID to /delete", async () => {
+        /**/
     });
 
     it("should clear a refresh token from cookie and user database upon request to /logout", (done) => {
