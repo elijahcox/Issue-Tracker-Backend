@@ -20,6 +20,7 @@ const tempTask = {
 let accessToken;
 let uid;
 let tid;
+let tid2;
 
 describe("Standard CRUD Lifecycle Flow for Users and Tasks", () => {
     before(async () => {
@@ -70,23 +71,56 @@ describe("Standard CRUD Lifecycle Flow for Users and Tasks", () => {
             .set("Authorization", "Bearer " + accessToken)
             .expect(201)
             .then((res) => {
-                tid = res.body._id;
                 expect(res.body).to.not.eql("");
+                tid = res.body._id;
             });
         const foundTask = await Task.findOne({ _id: tid, userID: uid }).exec();
         expect(foundTask).to.not.eql(null);
     });
 
-    it("should update existing task object when posting updated field to /tasks, including ID", async () => {
-        /**/
+    it("should return the correct task when querying /tasks with GET by ID", async () => {
+        await request(server)
+            .get("/tasks/" + tid)
+            .set("Authorization", "Bearer " + accessToken)
+            .expect(200)
+            .then((res) => {
+                expect(res.body.title).to.be.eql("Test Task");
+            });
     });
 
-    it("should return the correct task when querying /tasks with GET by ID", async () => {
-        /**/
+    it("should successfully call patch on /tasks/:id", async () => {
+        tempTask.title = "Updated Title";
+        await request(server)
+            .patch("/tasks/" + tid)
+            .send(tempTask)
+            .set("Authorization", "Bearer " + accessToken)
+            .expect(204)
+            .then((res) => {
+                expect(res.body).to.not.eql("");
+            });
+        const foundTask = await Task.findOne({ _id: tid, userID: uid }).exec();
+        expect(foundTask.title).to.eql("Updated Title");
     });
 
     it("should return the correct number of tasks when querying /tasks with GET ALL", async () => {
-        /**/
+        await request(server) //create second task
+            .post("/tasks")
+            .send(tempTask)
+            .set("Authorization", "Bearer " + accessToken)
+            .expect(201)
+            .then((res) => {
+                expect(res.body).to.not.eql("");
+                tid2 = res.body._id;
+            });
+
+        await request(server) //create second task
+            .get("/tasks")
+            .set("Authorization", "Bearer " + accessToken)
+            .expect(200)
+            .then((res) => {
+                expect(res.body).to.not.eql("");
+                expect(res.body.length).to.eql(2);
+            });
     });
 
     it("should unsuccessfully call delete  on /tasks/:id (valid id, no auth token)", async () => {
@@ -106,6 +140,14 @@ describe("Standard CRUD Lifecycle Flow for Users and Tasks", () => {
             .then((res) => {});
         const foundTask = await Task.findOne({ _id: tid, userID: uid }).exec();
         expect(foundTask).to.eql(null);
+
+        await request(server)
+            .delete("/tasks/" + tid2)
+            .set("Authorization", "Bearer " + accessToken)
+            .expect(204)
+            .then((res) => {});
+        const foundTask2 = await Task.findOne({ _id: tid2, userID: uid }).exec();
+        expect(foundTask2).to.eql(null);
     });
 
     it("should clear a refresh token from cookie and user database upon request to /logout", (done) => {
