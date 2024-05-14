@@ -4,7 +4,7 @@
 name: Build and deploy Node.js app to Azure Web App - IssueTracker-1337
 
 on:
-    pull-request:
+    pull:
         branches:
             - main
     workflow_dispatch:
