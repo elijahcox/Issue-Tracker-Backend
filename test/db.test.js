@@ -123,6 +123,30 @@ describe("Standard CRUD Lifecycle Flow for Users and Tasks", () => {
             });
     });
 
+    it("should return the correct number of tasks when querying /tasks with GET by status", async () => {
+        await request(server) //create second task
+            .get("/tasks")
+            .send({ "status": "To Do" })
+            .set("Authorization", "Bearer " + accessToken)
+            .expect(200)
+            .then((res) => {
+                expect(res.body).to.not.eql("");
+                expect(res.body.length).to.eql(2);
+            });
+    });
+
+    it("should return the correct number of tasks when querying /tasks with GET by priority", async () => {
+        await request(server) //create second task
+            .get("/tasks")
+            .send({ "priority": "low" })
+            .set("Authorization", "Bearer " + accessToken)
+            .expect(200)
+            .then((res) => {
+                expect(res.body).to.not.eql("");
+                expect(res.body.length).to.eql(2);
+            });
+    });
+
     it("should unsuccessfully call delete  on /tasks/:id (valid id, no auth token)", async () => {
         await request(server)
             .delete("/tasks/" + tid)
