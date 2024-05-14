@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const path = require("path");
+const verifyJWT = require("./middleware/verifyJWT.js");
 const server = express();
 const { logger, errorLogger } = require("./middleware/logEvents.js");
 const connectDB = require("./config/dbConn.js");
@@ -14,11 +15,16 @@ server.use(logger); //custom middleware logger
 
 server.use(express.json()); //without a route specified, app use will be called with any request, they follow the chained order layed out here
 server.use(cookieParser());
+
 server.use("/", require("./routes/root"));
-server.use("/register", require("./routes/api/register.js"));
-server.use("/authenticate", require("./routes/api/authenticate"));
-server.use("/refresh", require("./routes/api/refresh"));
-server.use("/logout", require("./routes/api/logout"));
+server.use("/register", require("./routes/register.js"));
+server.use("/authenticate", require("./routes/authenticate.js"));
+server.use("/refresh", require("./routes/refresh.js"));
+server.use("/logout", require("./routes/logout.js"));
+
+//must protect tasks
+server.use(verifyJWT);
+server.use("/tasks", require("./routes/api/task"));
 
 server.all("*", (req, res) => {
     res.status(404); //set response status to 404

@@ -13,12 +13,20 @@ describe("Simple Get requests", () => {
             });
     });
 
-    it("should return status 404 when GET/{undefined}", (done) => {
+    it("should return status 401 when GET/{undefined} while not authenticated", (done) => {
         request(server)
             .get("/junk")
             .end((err, res) => {
-                expect(res.status).to.equal(404);
-                expect(res.text).to.contain("The requested resource could not be found");
+                expect(res.status).to.equal(401);
+                done();
+            });
+    });
+
+    it("should return status 401 when requesting tasks resource area without a token", (done) => {
+        request(server)
+            .get("/tasks")
+            .end((err, res) => {
+                expect(res.status).to.equal(401);
                 done();
             });
     });

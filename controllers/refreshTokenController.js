@@ -18,11 +18,13 @@ const handleRefreshToken = async (req, res) => {
     jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, decoded) => {
         if (err || foundUser.username !== decoded.username) return res.sendStatus(403);
         const role = foundUser.role;
+        const userID = foundUser._id.toString();
         const accessToken = jwt.sign(
             {
                 "UserInfo": {
                     "username": decoded.username,
-                    "role": role
+                    "role": role,
+                    "userID": userID
                 }
             },
             process.env.ACCESS_TOKEN_SECRET,
