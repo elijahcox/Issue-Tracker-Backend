@@ -7,7 +7,28 @@ const server = express();
 const { logger, errorLogger } = require("./middleware/logEvents.js");
 const connectDB = require("./config/dbConn.js");
 const cookieParser = require("cookie-parser");
+const swaggerUi = require("swagger-ui-express");
+const swaggerJsDoc = require("swagger-jsdoc");
 const PORT = process.env.port || 3500;
+
+const swaggerOptions = {
+    definition: {
+        openapi: "3.0.0",
+        info: {
+            title: "Task Manager / Issue Tracker API",
+            version: "1.0.0",
+            description: "API for manipulating task and user data"
+        },
+        servers: [
+            {
+                url: "https://issuetracker-1337.azurewebsites.net"
+            }
+        ]
+    },
+    apis: ["./routes/*.js", "./routes/api/*.js"]
+};
+
+const swaggerDocs = swaggerJsDoc(swaggerOptions);
 
 connectDB();
 
@@ -15,6 +36,7 @@ server.use(logger); //custom middleware logger
 
 server.use(express.json()); //without a route specified, app use will be called with any request, they follow the chained order layed out here
 server.use(cookieParser());
+server.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 server.use("/", require("./routes/root"));
 server.use("/register", require("./routes/register.js"));
